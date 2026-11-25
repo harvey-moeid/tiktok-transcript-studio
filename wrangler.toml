@@ -1,0 +1,7 @@
+name = "tiktok-transcript-studio"
+compatibility_date = "2026-11-25"
+pages_build_output_dir = "./public"
+
+[[r2_buckets]]
+binding = "TRANSCRIPTS"
+bucket_name = "tiktok-transcript-temp"

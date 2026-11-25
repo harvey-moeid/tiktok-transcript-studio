@@ -1,79 +1,23 @@
 {
   "name": "@iankiku/anytranscript",
   "version": "1.2.0",
-  "description": "CLI and Node.js library to transcribe any video URL to text — YouTube, Instagram, TikTok, and 1,800+ sites via yt-dlp. Platform captions when they exist, local whisper.cpp or hosted Whisper (OpenAI/Groq) when they don't.",
+  "description": "TikTok Transcript Studio runner based on anytranscript",
   "type": "module",
   "license": "MIT",
   "author": "Ian Kiku <iankiku@gmail.com>",
-  "bin": {
-    "anytranscript": "dist/cli.js",
-    "ant": "dist/cli.js"
-  },
+  "bin": { "anytranscript": "dist/cli.js", "ant": "dist/cli.js" },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
-  "engines": {
-    "node": ">=20.6.0"
-  },
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": { "node": ">=20.6.0" },
   "scripts": {
     "build": "tsc && chmod +x dist/cli.js",
     "dev": "tsc --watch",
     "test": "node --test test/*.test.js",
     "prepublishOnly": "npm run build && npm test"
   },
-  "keywords": [
-    "transcript",
-    "transcription",
-    "video-transcription",
-    "video-to-text",
-    "audio-to-text",
-    "whisper",
-    "whisper-cpp",
-    "openai-whisper",
-    "groq",
-    "yt-dlp",
-    "youtube",
-    "youtube-transcript",
-    "tiktok",
-    "instagram",
-    "reels",
-    "captions",
-    "subtitles",
-    "vtt",
-    "speech-to-text",
-    "speech-recognition",
-    "cli",
-    "typescript",
-    "nodejs",
-    "agent",
-    "agent-tools",
-    "llm-tools",
-    "rag",
-    "mcp"
-  ],
-  "devDependencies": {
-    "@types/node": "^22.7.5",
-    "typescript": "^5.6.3"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/iankiku/anytranscript.git"
-  },
-  "homepage": "https://github.com/iankiku/anytranscript#readme",
-  "bugs": {
-    "url": "https://github.com/iankiku/anytranscript/issues"
-  }
+  "devDependencies": { "@types/node": "^22.7.5", "typescript": "^5.6.3" },
+  "repository": { "type": "git", "url": "git+https://github.com/harvey-moeid/tiktok-transcript-studio.git" },
+  "homepage": "https://github.com/harvey-moeid/tiktok-transcript-studio#readme"
 }
