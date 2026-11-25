@@ -3,39 +3,33 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        description: HTTPS TikTok video URL
+        description: "Canonical TikTok URL: https://www.tiktok.com/@user/video/123"
         required: true
         type: string
       job_id:
-        description: Job ID (leave blank for manual runs)
+        description: "Job ID (leave blank for manual runs)"
         required: false
         type: string
-
 permissions:
   contents: read
-
 concurrency:
   group: transcript-${{ inputs.job_id || github.run_id }}
   cancel-in-progress: false
-
 jobs:
   transcribe:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - name: Checkout source
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "22"
           cache: npm
-      - name: Install system tools
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg cmake build-essential git
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg cmake build-essential git
       - name: Build pinned whisper.cpp
         run: |
           git clone https://github.com/ggml-org/whisper.cpp.git /tmp/whisper.cpp
-          git -C /tmp/whisper.cpp checkout 96ec4d9823e9d0211944172da35f9f29134af990
+          git -C /tmp/whisper.cpp checkout 092fa10
           cmake -S /tmp/whisper.cpp -B /tmp/whisper.cpp/build -DWHISPER_BUILD_TESTS=OFF -DWHISPER_BUILD_EXAMPLES=ON
           cmake --build /tmp/whisper.cpp/build --config Release --target whisper-cli -j 2
       - name: Build application
@@ -44,7 +38,7 @@ jobs:
         env:
           VIDEO_URL: ${{ inputs.url }}
         run: |
-          node --input-type=module -e 'const u=new URL(process.env.VIDEO_URL); const h=u.hostname.toLowerCase(); if(u.protocol!=="https:" || !["tiktok.com","www.tiktok.com","m.tiktok.com","vm.tiktok.com","vt.tiktok.com"].includes(h) || u.username || u.password || u.port) process.exit(1);'
+          node --input-type=module -e 'const u=new URL(process.env.VIDEO_URL); if(u.protocol!=="https:" || u.hostname.toLowerCase()!=="www.tiktok.com" || u.username || u.password || u.port || !/^\/@[\w.-]+\/video\/\d+\/?$/.test(u.pathname)) process.exit(1);'
       - name: Transcribe
         env:
           VIDEO_URL: ${{ inputs.url }}
