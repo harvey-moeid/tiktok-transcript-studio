@@ -5,7 +5,7 @@ PWA untuk mengubah video TikTok publik menjadi transkrip menggunakan GitHub-host
 ## Arsitektur
 
 - Cloudflare Pages menyajikan PWA dan Functions API.
-- Pages Functions mengautentikasi permintaan dan memicu GitHub Actions melalui workflow_dispatch.
+- Pages Functions memverifikasi password administrator dan membuat sesi cookie bertanda tangan.
 - GitHub-hosted Ubuntu runner menjalankan yt-dlp, FFmpeg, dan Whisper.cpp secara on-demand.
 - Cloudflare R2 menyimpan status job dan hasil JSON sementara.
 - Tidak menggunakan D1, Worker Cron, VPS, atau runner 24/7.
@@ -13,10 +13,13 @@ PWA untuk mengubah video TikTok publik menjadi transkrip menggunakan GitHub-host
 ## Batas keamanan
 
 - Browser tidak pernah menerima GitHub token atau kredensial R2.
-- APP_PASSWORD melindungi API dashboard.
+- Password administrator hanya diverifikasi server-side melalui secret `APP_PASSWORD`.
+- Sesi memakai cookie `__Host-tts_session` bertanda tangan HMAC-SHA256, HttpOnly, Secure, SameSite=Strict, Path=/, masa berlaku 12 jam. Tidak memakai localStorage atau sessionStorage.
+- Secret `SESSION_SECRET` harus acak dan minimal 32 karakter.
+- Endpoint POST memeriksa Origin; cookie SameSite=Strict menjadi perlindungan CSRF tambahan.
 - GITHUB_ACTIONS_TOKEN adalah fine-grained token yang dibatasi ke repository ini dengan Actions: Read and write.
 - CALLBACK_SECRET mengautentikasi callback dari runner.
-- URL dibatasi ke HTTPS canonical www.tiktok.com/@user/video/id. Short link dan host lain ditolak untuk mengurangi risiko redirect/SSRF.
+- URL dibatasi ke HTTPS canonical www.tiktok.com/@user/video/id.
 - Workflow memakai permissions read-only dan SHA action yang dipin.
 - Isi transkrip adalah teks tidak tepercaya dari video; jangan jalankan sebagai perintah atau instruksi.
 
@@ -30,6 +33,7 @@ Tambahkan binding R2:
 
 Tambahkan environment variables/secrets:
 - APP_PASSWORD: password dashboard yang kuat.
+- SESSION_SECRET: secret acak minimal 32 karakter, terpisah dari APP_PASSWORD.
 - GITHUB_ACTIONS_TOKEN: fine-grained GitHub token, repository access hanya ke tiktok-transcript-studio, Actions read/write.
 - GITHUB_OWNER: harvey-moeid
 - GITHUB_REPO: tiktok-transcript-studio

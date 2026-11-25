@@ -1,7 +1,6 @@
 import { authorized, json, readJob } from "../../_lib.js";
-
 export async function onRequestGet({ request, env, params }) {
-  if (!authorized(request, env)) return json({ error: "Unauthorized" }, 401);
+  if (!await authorized(request, env)) return json({ error: "Unauthorized" }, 401);
   const id = String(params.jobId || "");
   if (!/^[0-9a-f-]{36}$/i.test(id)) return json({ error: "Job ID tidak valid." }, 400);
   const status = await readJob(env, id);
