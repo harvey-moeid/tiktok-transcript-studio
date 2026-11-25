@@ -1,4 +1,4 @@
-import { json } from "../../../_lib.js";
+import { json } from "../../_lib.js";
 export async function onRequestPost({ request, env }) {
   if (!env.CALLBACK_SECRET || request.headers.get("authorization") !== "Bearer " + env.CALLBACK_SECRET) return json({ error: "Unauthorized" }, 401);
   let body;
