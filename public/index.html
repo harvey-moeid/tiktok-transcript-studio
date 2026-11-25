@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#100d1d"><meta name="description" content="Transkripsi video TikTok menjadi teks dan subtitle.">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="stylesheet" href="/style.css">
+<title>TikTok Transcript Studio</title>
+</head>
+<body>
+<main class="shell">
+<header><div class="mark">T</div><div><p class="eyebrow">VIDEO → TEXT</p><h1>Transcript Studio</h1><p class="sub">Ubah tautan TikTok menjadi transkrip bertimestamp.</p></div></header>
+<section class="panel auth" id="authPanel">
+<h2>Akses dashboard</h2><p>Masukkan password aplikasi yang dikonfigurasi di Cloudflare.</p>
+<form id="loginForm"><input id="password" type="password" autocomplete="current-password" placeholder="Password aplikasi" required><button>Masuk</button></form>
+<p class="error" id="loginError" role="alert"></p>
+</section>
+<section class="panel hidden" id="appPanel">
+<div class="topline"><div><h2>Transkripsi baru</h2><p>Runner GitHub Actions akan memproses video secara on-demand.</p></div><button class="ghost" id="logout">Keluar</button></div>
+<form id="jobForm">
+<label for="url">URL video TikTok</label><input id="url" type="url" inputmode="url" placeholder="https://www.tiktok.com/@akun/video/..." required>
+<button id="submitBtn">Mulai transkripsi</button>
+</form>
+<div id="jobStatus" class="status hidden" aria-live="polite"></div>
+<div id="resultPanel" class="hidden">
+<div class="topline"><h2>Hasil transkrip</h2><button class="ghost" id="copyBtn">Salin teks</button></div>
+<textarea id="transcript" rows="12" readonly></textarea>
+<div class="actions"><a id="jsonDownload" download="transcript.json">JSON</a><a id="srtDownload" download="transcript.srt">SRT</a><a id="vttDownload" download="transcript.vtt">VTT</a></div>
+<p class="hint">Hasil disimpan sementara dan kedaluwarsa maksimal sekitar 24 jam. Verifikasi kembali nama, angka, dan kutipan dari audio asli.</p>
+</div>
+</section>
+<footer>GitHub Actions · Cloudflare R2 · Tanpa D1 · Tanpa Cron</footer>
+</main>
+<script src="/app.js" defer></script>
+</body></html>
