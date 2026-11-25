@@ -4,7 +4,7 @@
   "description": "TikTok Transcript Studio runner based on anytranscript",
   "type": "module",
   "license": "MIT",
-  "author": "Ian Kiku <ian.kiku@gmail.com>",
+  "author": "Ian Kiku <iankiku@gmail.com>",
   "bin": { "anytranscript": "dist/cli.js", "ant": "dist/cli.js" },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
