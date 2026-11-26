@@ -25,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Whisper model choice in the dashboard.** Pick `small` (default) or
+  `medium` before starting a transcription. The choice is validated by the
+  API, passed to the GitHub Actions workflow, and used only when the video has
+  no platform captions; when captions exist they are still used as before.
+  `medium` is more accurate but takes longer and uses more CPU and memory.
+  The manual "Transcribe TikTok" workflow offers the same choice.
+
 - **Dashboard job recovery.** The browser remembers the five most recent job
   IDs, resumes polling after a refresh, retries temporary network/server
   errors automatically, and offers a manual retry after the 10-minute polling
@@ -47,6 +54,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The dashboard's Whisper fallback now defaults to `small` instead of `tiny`,
+  which transcribes Indonesian speech noticeably better at the cost of a
+  longer run.
+- Audio sent to local Whisper is loudness-normalized (ffmpeg `loudnorm`) while
+  being converted to 16 kHz mono WAV, so quiet recordings transcribe more
+  reliably. Hosted-API (MP3) audio is unchanged.
 - Runs with a Whisper model already downloaded no longer look up its checksum
   online first.
 
