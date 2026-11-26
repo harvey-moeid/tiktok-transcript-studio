@@ -103,7 +103,10 @@ async function checkJob(id) {
   if (elapsed >= POLL_TIMEOUT_MS) {
     clearPoll(id);
     updateJob(id, { state: "timed_out" });
-    if (activeJobId === id) showStatus("Polling dihentikan setelah 10 menit. Job mungkin masih berjalan di runner. Tekan Coba lagi untuk melanjutkan pengecekan.", true);
+    if (activeJobId === id) {
+      $("submitBtn").disabled = false;
+      showStatus("Polling dihentikan setelah 10 menit. Job mungkin masih berjalan di runner. Tekan Coba lagi untuk melanjutkan pengecekan.", true);
+    }
     return;
   }
 
@@ -123,6 +126,7 @@ async function checkJob(id) {
       clearPoll(id);
       updateJob(id, { state: "failed" });
       if (activeJobId === id) {
+        $("submitBtn").disabled = false;
         const detail = job.error || "Transkripsi gagal.";
         showStatus(detail + " Kemungkinan penyebab: video tidak publik, runner GitHub Actions kehabisan kuota, atau proses unduh/transkripsi gagal. Job ini sudah berstatus gagal; kirim URL lagi untuk membuat job baru.", false);
       }
@@ -134,7 +138,10 @@ async function checkJob(id) {
     if (error.status === 401) {
       clearPoll(id);
       showApp(false);
-      if (activeJobId === id) showStatus("Sesi login berakhir. Masuk kembali untuk melanjutkan pemantauan.", false);
+      if (activeJobId === id) {
+        $("submitBtn").disabled = false;
+        showStatus("Sesi login berakhir. Masuk kembali untuk melanjutkan pemantauan.", false);
+      }
       return;
     }
     const transient = !error.status || error.status === 408 || error.status === 429 || error.status >= 500;
@@ -146,7 +153,10 @@ async function checkJob(id) {
     }
     clearPoll(id);
     updateJob(id, { state: "needs_retry", lastError: error.message });
-    if (activeJobId === id) showStatus(error.message + " " + possibleCause(error.status), true);
+    if (activeJobId === id) {
+      $("submitBtn").disabled = false;
+      showStatus(error.message + " " + possibleCause(error.status), true);
+    }
   }
 }
 
@@ -267,7 +277,7 @@ $("jobForm").addEventListener("submit", async event => {
     renderRecentJobs();
     startPolling(data.jobId);
   } catch (error) {
-    showStatus(error.message + " Periksa URL TikTok, koneksi, dan konfigurasi layanan.", true);
+    showStatus(error.message + " Periksa URL TikTok, koneksi, dan konfigurasi layanan.", false);
     $("submitBtn").disabled = false;
   }
 });
