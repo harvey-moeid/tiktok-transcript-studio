@@ -133,6 +133,7 @@ async function checkJob(id) {
   } catch (error) {
     if (error.status === 401) {
       clearPoll(id);
+      showApp(false);
       if (activeJobId === id) showStatus("Sesi login berakhir. Masuk kembali untuk melanjutkan pemantauan.", false);
       return;
     }
@@ -198,13 +199,26 @@ function renderRecentJobs() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "ghost small";
-    button.textContent = ["completed", "failed"].includes(job.state) ? "Lihat" : "Pantau";
-    button.addEventListener("click", () => {
-      if (["completed", "failed"].includes(job.state)) {
+    button.textContent = job.state === "completed" ? "Buka hasil" : job.state === "failed" ? "Coba lagi" : "Pantau";
+    button.addEventListener("click", async () => {
+      if (job.state === "completed") {
         activeJobId = job.id;
-        showStatus(job.state === "completed" ? "Job selesai. Hasil dapat dibuka kembali jika masih tersedia." : "Job gagal. Tekan Coba lagi untuk memeriksa ulang. " + (job.lastError || ""), job.state === "failed");
+        try {
+          const latest = await api("/api/jobs/" + encodeURIComponent(job.id));
+          if (latest.status === "completed") {
+            showStatus("Transkripsi selesai.");
+            $("retryJobBtn").classList.add("hidden");
+            render(latest.result || {});
+          } else {
+            startPolling(job.id, false);
+          }
+        } catch (error) {
+          showStatus(error.message + " " + possibleCause(error.status || 0), true);
+        }
+      } else if (job.state === "failed") {
+        activeJobId = job.id;
+        showStatus("Job sebelumnya berstatus gagal. Coba lagi hanya memeriksa status job yang sama; untuk membuat transkripsi baru, kirim URL sekali lagi. " + (job.lastError || ""), true);
         $("submitBtn").disabled = false;
-        if (job.state === "failed") $("retryJobBtn").classList.remove("hidden");
       } else {
         startPolling(job.id, job.state === "timed_out" || job.state === "needs_retry");
       }
