@@ -67,6 +67,8 @@ test("rejects missing, malformed and tampered sessions", async () => {
   const request = new Request("https://example.pages.dev/api/auth/session");
   assert.equal(await authorized(request, env), false);
   const cookie = await createSession(env);
-  const token = cookie.split(";")[0].replace(/.$/, "x");
+  const parts = cookie.split(";")[0].split(".");
+  parts[2] = (parts[2][0] === "A" ? "B" : "A") + parts[2].slice(1); // first char carries all 6 bits, so this always changes the signature
+  const token = parts.join(".");
   assert.equal(await authorized(new Request("https://example.pages.dev", { headers: { cookie: token } }), env), false);
 });
