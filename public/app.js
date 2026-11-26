@@ -124,7 +124,7 @@ async function checkJob(id) {
       updateJob(id, { state: "failed" });
       if (activeJobId === id) {
         const detail = job.error || "Transkripsi gagal.";
-        showStatus(detail + " Kemungkinan penyebab: video tidak publik, runner GitHub Actions kehabisan kuota, atau proses unduh/transkripsi gagal.", true);
+        showStatus(detail + " Kemungkinan penyebab: video tidak publik, runner GitHub Actions kehabisan kuota, atau proses unduh/transkripsi gagal. Job ini sudah berstatus gagal; kirim URL lagi untuk membuat job baru.", false);
       }
       return;
     }
@@ -199,7 +199,7 @@ function renderRecentJobs() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "ghost small";
-    button.textContent = job.state === "completed" ? "Buka hasil" : job.state === "failed" ? "Coba lagi" : "Pantau";
+    button.textContent = job.state === "completed" ? "Buka hasil" : job.state === "failed" ? "Info" : "Pantau";
     button.addEventListener("click", async () => {
       if (job.state === "completed") {
         activeJobId = job.id;
@@ -217,7 +217,7 @@ function renderRecentJobs() {
         }
       } else if (job.state === "failed") {
         activeJobId = job.id;
-        showStatus("Job sebelumnya berstatus gagal. Coba lagi hanya memeriksa status job yang sama; untuk membuat transkripsi baru, kirim URL sekali lagi. " + (job.lastError || ""), true);
+        showStatus("Job ini sudah berstatus gagal. " + (job.lastError || "") + " Kemungkinan penyebab: video tidak publik, kuota GitHub Actions habis, atau proses unduh/transkripsi gagal. Kirim URL lagi untuk membuat job baru.", false);
         $("submitBtn").disabled = false;
       } else {
         startPolling(job.id, job.state === "timed_out" || job.state === "needs_retry");
