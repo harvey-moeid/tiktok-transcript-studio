@@ -20,7 +20,14 @@
 <label for="url">URL video TikTok</label><input id="url" type="url" inputmode="url" placeholder="https://www.tiktok.com/@akun/video/... atau https://vm.tiktok.com/..." required>
 <button id="submitBtn">Mulai transkripsi</button>
 </form>
-<div id="jobStatus" class="status hidden" aria-live="polite"></div>
+<div id="jobStatus" class="status hidden" aria-live="polite">
+  <p id="jobStatusText"></p>
+  <button id="retryJobBtn" class="ghost hidden" type="button">Coba lagi</button>
+</div>
+<section class="recent-panel" aria-labelledby="recentHeading">
+  <div class="topline"><h2 id="recentHeading">Job terakhir</h2><span class="hint">Maks. 5 job · tersimpan di browser ini</span></div>
+  <div id="recentJobs" class="recent-jobs"></div>
+</section>
 <div id="resultPanel" class="hidden">
 <div class="topline"><h2>Hasil transkrip</h2><button class="ghost" id="copyBtn">Salin teks</button></div>
 <textarea id="transcript" rows="12" readonly></textarea>
