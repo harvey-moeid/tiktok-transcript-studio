@@ -63,8 +63,11 @@ Tidak ada Worker Cron atau scheduled trigger. API juga menghapus objek kedaluwar
 - CI: .github/workflows/ci.yml
 - Transkripsi on-demand: .github/workflows/transcribe.yml
 - Pemicu dashboard: POST /api/jobs
-- Pemicu manual: GitHub Actions → Transcribe TikTok → Run workflow; masukkan URL canonical. Job ID boleh kosong.
-- Model default: tiny agar realistis untuk runner CPU gratis; model ini lebih cepat tetapi akurasinya di bawah small/medium.
+- Pemicu manual: GitHub Actions → Transcribe TikTok → Run workflow; masukkan URL canonical dan pilih model.
+- Model Whisper default: small; medium tersedia untuk kualitas lebih tinggi dengan waktu dan penggunaan CPU/memori lebih besar.
+- Model hanya digunakan saat caption platform tidak tersedia. Jika caption tersedia, aplikasi tetap memakai caption tersebut.
+- Audio Whisper diubah menjadi WAV mono 16 kHz dan dinormalisasi loudness-nya sebelum diproses.
+- Whisper CPU dapat memerlukan waktu beberapa menit; kuota GitHub Actions berlaku.
 
 ## Pengujian lokal
 
