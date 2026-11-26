@@ -57,6 +57,62 @@ export function validTikTokUrl(input) {
   if (url.protocol !== "https:" || url.username || url.password || url.port || url.hostname.toLowerCase() !== "www.tiktok.com") return false;
   return /^\/@[\w.-]+\/video\/\d+\/?$/.test(url.pathname);
 }
+
+// Short links (vm.tiktok.com/XXXX, vt.tiktok.com/XXXX, tiktok.com/t/XXXX) redirect to the
+// canonical video URL. We follow them by hand, one hop at a time, and only ever request
+// TikTok hosts, so a crafted redirect can't turn this endpoint into an open fetch proxy.
+const SHORT_LINK_HOSTS = new Set(["vm.tiktok.com", "vt.tiktok.com"]);
+const TIKTOK_HOSTS = new Set([...SHORT_LINK_HOSTS, "tiktok.com", "www.tiktok.com", "m.tiktok.com"]);
+const MAX_REDIRECTS = 5;
+function parseHttps(input) {
+  let url;
+  try { url = new URL(input); } catch { return null; }
+  if (url.protocol !== "https:" || url.username || url.password || url.port) return null;
+  return url;
+}
+export function isTikTokShortLink(input) {
+  const url = parseHttps(input);
+  if (!url) return false;
+  const host = url.hostname.toLowerCase();
+  if (SHORT_LINK_HOSTS.has(host)) return /^\/[\w-]+\/?$/.test(url.pathname);
+  if (host === "tiktok.com" || host === "www.tiktok.com") return /^\/t\/[\w-]+\/?$/.test(url.pathname);
+  return false;
+}
+function canonicalVideoUrl(url) {
+  const host = url.hostname.toLowerCase();
+  if (host !== "tiktok.com" && host !== "www.tiktok.com" && host !== "m.tiktok.com") return null;
+  const match = /^\/(@[\w.-]+)\/video\/(\d+)\/?$/.exec(url.pathname);
+  return match ? `https://www.tiktok.com/${match[1]}/video/${match[2]}` : null;
+}
+/**
+ * Returns a canonical https://www.tiktok.com/@user/video/ID URL for a video link or a short
+ * link, or null when the input isn't one or can't be resolved. Query strings are dropped.
+ */
+export async function resolveTikTokUrl(input, { fetchImpl = fetch, timeoutMs = 5000 } = {}) {
+  if (validTikTokUrl(input)) return input;
+  if (!isTikTokShortLink(input)) return null;
+  let current = input;
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+    const url = parseHttps(current);
+    if (!url || !TIKTOK_HOSTS.has(url.hostname.toLowerCase())) return null;
+    const canonical = canonicalVideoUrl(url);
+    if (canonical) return canonical;
+    if (!isTikTokShortLink(url.href)) return null;
+    let response;
+    try {
+      response = await fetchImpl(url.href, {
+        method: "GET", redirect: "manual",
+        headers: { accept: "text/html", "user-agent": "Mozilla/5.0 (compatible; tiktok-transcript-studio)" },
+        signal: AbortSignal.timeout(timeoutMs)
+      });
+    } catch { return null; }
+    try { await response.body?.cancel(); } catch { /* body already consumed */ }
+    const location = response.headers.get("location");
+    if (response.status < 300 || response.status >= 400 || !location) return null;
+    try { current = new URL(location, url).href; } catch { return null; }
+  }
+  return null;
+}
 export async function readJob(env, id) {
   const object = await env.TRANSCRIPTS.get("jobs/" + id + "/status.json");
   if (!object) return null;
