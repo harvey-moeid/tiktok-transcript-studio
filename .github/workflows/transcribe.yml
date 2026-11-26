@@ -10,6 +10,14 @@ on:
         description: "Job ID (leave blank for manual runs)"
         required: false
         type: string
+      model:
+        description: "Whisper model (used only when platform captions are unavailable)"
+        required: true
+        type: choice
+        options:
+          - small
+          - medium
+        default: small
 permissions:
   contents: read
 concurrency:
@@ -42,9 +50,10 @@ jobs:
       - name: Transcribe
         env:
           VIDEO_URL: ${{ inputs.url }}
+          MODEL: ${{ inputs.model || 'small' }}
           ANYTRANSCRIPT_WHISPER: /tmp/whisper.cpp/build/bin/whisper-cli
           ANYTRANSCRIPT_REQUIRE_CHECKSUM: "1"
-        run: node dist/cli.js "$VIDEO_URL" --backend local --model tiny --lang id --format json --out /tmp/transcript.json
+        run: node dist/cli.js "$VIDEO_URL" --backend local --model "$MODEL" --lang id --format json --out /tmp/transcript.json
       - name: Send result to Cloudflare
         if: always()
         env:

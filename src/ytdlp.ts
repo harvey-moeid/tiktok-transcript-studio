@@ -219,7 +219,7 @@ export async function downloadAudio(
   const ext = format === "wav16" ? "wav" : "mp3";
   const formatArgs =
     format === "wav16"
-      ? ["--audio-format", "wav", "--postprocessor-args", "ffmpeg:-ar 16000 -ac 1"]
+      ? ["--audio-format", "wav", "--postprocessor-args", "ffmpeg:-ar 16000 -ac 1 -af loudnorm=I=-16:TP=-1.5:LRA=11"]
       : ["--audio-format", "mp3", "--audio-quality", "192K"];
 
   await run(bin, [

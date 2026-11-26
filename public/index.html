@@ -18,6 +18,12 @@
 <div class="topline"><div><h2>Transkripsi baru</h2><p>Runner GitHub Actions akan memproses video secara on-demand.</p></div><button class="ghost" id="logout">Keluar</button></div>
 <form id="jobForm">
 <label for="url">URL video TikTok</label><input id="url" type="url" inputmode="url" placeholder="https://www.tiktok.com/@akun/video/... atau https://vm.tiktok.com/..." required>
+<label for="model">Model transkripsi</label>
+<select id="model">
+<option value="small" selected>Small — seimbang (disarankan)</option>
+<option value="medium">Medium — lebih akurat, proses lebih lama</option>
+</select>
+<p class="hint">Model digunakan jika video tidak menyediakan caption. Jika caption tersedia, caption asli tetap dipakai.</p>
 <button id="submitBtn">Mulai transkripsi</button>
 </form>
 <div id="jobStatus" class="status hidden" aria-live="polite">
