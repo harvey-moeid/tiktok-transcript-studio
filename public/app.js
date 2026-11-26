@@ -270,7 +270,7 @@ $("jobForm").addEventListener("submit", async event => {
   $("resultPanel").classList.add("hidden");
   showStatus("Mengirim job ke GitHub Actions…");
   try {
-    const data = await api("/api/jobs", { method: "POST", body: JSON.stringify({ url: $("url").value }) });
+    const data = await api("/api/jobs", { method: "POST", body: JSON.stringify({ url: $("url").value, model: $("model").value }) });
     const entry = { id: data.jobId, startedAt: Date.now(), updatedAt: Date.now(), state: data.status || "queued" };
     jobs = [entry, ...jobs.filter(job => job.id !== entry.id)].slice(0, HISTORY_LIMIT);
     saveJobs();
