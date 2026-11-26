@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Dashboard job recovery.** The browser remembers the five most recent job
+  IDs, resumes polling after a refresh, retries temporary network/server
+  errors automatically, and offers a manual retry after the 10-minute polling
+  window with a clear explanation when a job may have expired or failed.
+
 - **TikTok short links work in the dashboard.** Paste a `vm.tiktok.com`,
   `vt.tiktok.com` or `tiktok.com/t/...` link and it is resolved to the
   video's canonical `www.tiktok.com/@user/video/ID` address before the job
@@ -140,20 +145,20 @@ once, and tools that agents can call directly. Nothing existing breaks.
 ### Fixed
 
 - YouTube videos with only auto-generated captions could fail with `HTTP Error
-  429: Too Many Requests` instead of returning a transcript. YouTube stores a
-  video's original auto-captions under `<lang>-orig` (for example `en-orig`)
+  429: Too Many Requests` instead of returning a transcript. YouTube stores
+  a video's original auto-captions under `<lang>-orig` (for example `en-orig`)
   and reserves `<lang>` for auto-translated tracks, which are heavily
-  rate-limited. Caption lookup now tries `<lang>-orig` first and falls back to
-  `<lang>`, and if caption download still fails, it falls through to Whisper
-  audio transcription instead of crashing the run (unless `--captions-only` is
+  rate-limited. Caption lookup now tries `<lang>-orig` first and falls back
+  to `<lang>`, and if caption download still fails, it falls through to
+  Whisper audio transcription instead of crashing (unless `--captions-only` is
   set).
 
 ### Changed
 
 - Error messages from `yt-dlp` and `ffmpeg` now include plain-English hints on
   how to recover — for example, passing `--cookies-from-browser chrome` or
-  `--whisper-only` when rate-limited (HTTP 429), passing browser cookies when a
-  video requires sign-in, or installing `ffmpeg` when audio extraction fails.
+  `--whisper-only` when rate-limited (HTTP 429), passing browser cookies when
+  a video requires sign-in, or installing `ffmpeg` when audio extraction fails.
 
 ## [1.0.1] - 2026-09-27
 
@@ -161,7 +166,7 @@ once, and tools that agents can call directly. Nothing existing breaks.
 
 - `dist/cli.js` wasn't marked executable after a plain `tsc` build. It didn't
   surface locally (`npm link` and repeated `npx` runs reuse a cache entry that
-  was already executable from an earlier build), but it could break a fresh
+  was already executable from an earlier run), but it could break a fresh
   global install or a cold `npx` run on some setups. `npm run build` now
   `chmod +x`'s it as part of the build step.
 
@@ -190,15 +195,9 @@ that history is not covered here.
   Groq, with `auto` preferring whatever is available.
 - Typed library API — `transcribe()`, plus `vttToText` / `vttToSegments` for
   callers that already have a `.vtt`.
-- yt-dlp and Whisper model weights resolve and download on first use, so
-  `npm install` stays offline-safe and `npx` works on a cold machine.
-
-### Security
-
 - Downloaded binaries and model weights are verified against upstream SHA-256
   checksums — yt-dlp's published `SHA2-256SUMS`, and Hugging Face's
-  `x-linked-etag` — before being moved into the cache or made executable. A
-  mismatch discards the download and fails loudly.
+  `x-linked-etag` — before being moved into the cache or made executable.
 - No runtime dependencies, so the package carries no transitive supply-chain
   surface of its own.
 
@@ -207,4 +206,4 @@ that history is not covered here.
 [1.1.0]: https://github.com/iankiku/anytranscript/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/iankiku/anytranscript/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/iankiku/anytranscript/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/iankiku/anytranscript/releases/tag/v1.0.0
+[1.0.0]: https://github.com/iankiku/anytranscript/compare/v1.0.0...v1.0.0
