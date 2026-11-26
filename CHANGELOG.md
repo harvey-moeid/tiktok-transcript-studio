@@ -25,6 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **TikTok short links work in the dashboard.** Paste a `vm.tiktok.com`,
+  `vt.tiktok.com` or `tiktok.com/t/...` link and it is resolved to the
+  video's canonical `www.tiktok.com/@user/video/ID` address before the job
+  starts; tracking parameters are dropped. Redirects are followed only
+  between TikTok hosts (at most 5 hops, 5 second timeout each), so a link
+  can't make the server fetch anything else. Links that don't resolve to a
+  video are still rejected with the same message.
+
 - **Transcribe video and audio files on your computer**, not only links:
   `ant ~/Downloads/IMG_2509.MOV -o notes.md`. Any file ffmpeg reads works
   (`.mov`, `.mp4`, `.m4a`, `.mp3`, `.wav`...), given as a plain, relative,
