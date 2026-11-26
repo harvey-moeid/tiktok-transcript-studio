@@ -28,8 +28,8 @@ test("resolves a short link to the canonical video URL and drops tracking parame
 });
 test("follows several TikTok hops and relative redirects", async () => {
   const fetchImpl = fakeFetch({
-    "https://vt.tiktok.com/ZSabc123/": redirect("/t/ZTabc123/"),
-    "https://vt.tiktok.com/t/ZTabc123/": redirect("https://www.tiktok.com/t/ZTabc123/"),
+    "https://vt.tiktok.com/ZSabc123/": redirect("/ZSdef456/"),
+    "https://vt.tiktok.com/ZSdef456/": redirect("https://www.tiktok.com/t/ZTabc123/"),
     "https://www.tiktok.com/t/ZTabc123/": redirect("https://m.tiktok.com/@a.b/video/42")
   });
   assert.equal(await resolveTikTokUrl("https://vt.tiktok.com/ZSabc123/", { fetchImpl }), "https://www.tiktok.com/@a.b/video/42");
